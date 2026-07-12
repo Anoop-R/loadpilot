@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider tsx watch src/server.ts",
-    "build": "tsc --version && tsc -p .",
+    "build": "npm install --include=dev && tsc --version && tsc -p .",
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider node dist/server.js"
   },
   "dependencies": {
