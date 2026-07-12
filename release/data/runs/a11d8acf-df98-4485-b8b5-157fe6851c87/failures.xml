@@ -1,0 +1,98 @@
+1783451865762,130,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: An established connection was aborted by the software in your host machine,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451865975,24,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Connection reset by peer,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451866516,3,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Connection reset by peer,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451866516,3,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Connection reset by peer,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451866783,7,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Connection reset by peer,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451866924,4,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451867020,2,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451867537,3,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451867538,3,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451867805,3,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451867948,2,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451868028,2,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451868547,3,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"
+1783451868549,2,JSONPlaceholder Simple Test,Non HTTP response code: java.net.SocketException,Non HTTP response message: Network is unreachable: connect,false,"Test failed: code expected to equal /
+
+****** received  : [[[Non HTTP response code: java.net.SocketException]]]
+
+****** comparison: [[[201                                             ]]]
+
+/"

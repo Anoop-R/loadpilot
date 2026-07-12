@@ -1,0 +1,90 @@
+# LoadPilot — GitHub Actions Load Test Trigger
+# 
+# Triggers a load test on your LoadPilot server and fails the pipeline
+# if performance degrades beyond acceptable thresholds.
+#
+# Setup:
+#   1. Add LOADPILOT_URL to GitHub Secrets (e.g. http://192.168.1.100:4000)
+#   2. Add LOADPILOT_CONFIG_ID to GitHub Secrets (saved config UUID from LoadPilot)
+#   3. Add this file to .github/workflows/load-test.yml
+#
+# The workflow uploads the HTML report as a build artifact after every run.
+
+name: Load Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:         # Allow manual trigger from GitHub UI
+  schedule:
+    - cron: "0 2 * * 1"     # Every Monday at 2am UTC
+
+jobs:
+  load-test:
+    name: Run performance test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Trigger LoadPilot run
+        id: trigger
+        env:
+          LOADPILOT_URL: ${{ secrets.LOADPILOT_URL }}
+          CONFIG_ID: ${{ secrets.LOADPILOT_CONFIG_ID }}
+        run: |
+          echo "Triggering load test..."
+          RESPONSE=$(curl -sf -X POST "$LOADPILOT_URL/api/runs/trigger" \
+            -H "Content-Type: application/json" \
+            -d "{\"savedConfigId\": \"$CONFIG_ID\", \"waitForCompletion\": true}" \
+            --max-time 600)
+          
+          echo "response=$RESPONSE"
+          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+          
+          STATUS=$(echo "$RESPONSE" | jq -r '.status // "error"')
+          RUN_ID=$(echo "$RESPONSE" | jq -r '.runId // ""')
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          
+          echo "Run ID: $RUN_ID"
+          echo "Status: $STATUS"
+          
+          if [ "$STATUS" != "completed" ]; then
+            echo "Load test did not complete successfully (status: $STATUS)"
+            exit 1
+          fi
+
+      - name: Download HTML report
+        if: always() && steps.trigger.outputs.run_id != ''
+        env:
+          LOADPILOT_URL: ${{ secrets.LOADPILOT_URL }}
+          RUN_ID: ${{ steps.trigger.outputs.run_id }}
+        run: |
+          curl -o load-test-report.html \
+            "$LOADPILOT_URL/api/runs/$RUN_ID/report.html?mode=external"
+          echo "Report downloaded."
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-report-${{ github.run_number }}
+          path: load-test-report.html
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.trigger.outputs.run_id != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.trigger.outputs.status }}';
+            const runId = '${{ steps.trigger.outputs.run_id }}';
+            const emoji = status === 'completed' ? '✅' : '❌';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${emoji} **Load test ${status}**\nRun ID: \`${runId}\`\nReport available as build artifact.`
+            });

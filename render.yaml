@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: loadpilot-backend
+    env: node
+    plan: free
+    branch: main
+    buildCommand: cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: IS_CLOUD
+        value: 'true'
+      - key: PORT
+        value: '4000'
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MONGO_URI
+        sync: false

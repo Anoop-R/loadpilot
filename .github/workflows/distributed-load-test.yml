@@ -1,0 +1,90 @@
+# LoadPilot — Distributed Load Test (multiple GitHub Actions runners)
+# 
+# Runs the same test from multiple runners simultaneously, combining
+# their load for higher concurrency than a single machine can achieve.
+# Each runner independently hits the API under test.
+#
+# NOTE: Ensure your LoadPilot config has users set to (total_users / matrix_count)
+# e.g. for 400 total users across 4 runners, set config users = 100
+
+name: Distributed Load Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_id:
+        description: "LoadPilot saved config UUID"
+        required: true
+      runners:
+        description: "Number of parallel runners (2-8)"
+        default: "4"
+        required: false
+
+jobs:
+  distributed-load:
+    name: Runner ${{ matrix.runner_index }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      matrix:
+        runner_index: [1, 2, 3, 4]
+      fail-fast: false   # Keep all runners going even if one fails
+
+    steps:
+      - name: Install JMeter
+        run: |
+          wget -q https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
+          tar -xzf apache-jmeter-5.6.3.tgz
+          echo "$PWD/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
+
+      - name: Get test plan from LoadPilot
+        env:
+          LOADPILOT_URL: ${{ secrets.LOADPILOT_URL }}
+          CONFIG_ID: ${{ github.event.inputs.config_id }}
+        run: |
+          # Download the JMX file from the saved config
+          curl -sf -X POST "$LOADPILOT_URL/api/builder/generate-from-config" \
+            -H "Content-Type: application/json" \
+            -d "{\"savedConfigId\": \"$CONFIG_ID\"}" \
+            -o test-plan.jmx
+          echo "Test plan downloaded for runner ${{ matrix.runner_index }}"
+
+      - name: Run JMeter
+        run: |
+          jmeter -n -t test-plan.jmx -l results-${{ matrix.runner_index }}.jtl \
+            -Jrunner_index=${{ matrix.runner_index }}
+          echo "JMeter completed for runner ${{ matrix.runner_index }}"
+
+      - name: Upload JTL results
+        uses: actions/upload-artifact@v4
+        with:
+          name: jtl-runner-${{ matrix.runner_index }}
+          path: results-${{ matrix.runner_index }}.jtl
+
+  combine-results:
+    name: Combine and analyse results
+    needs: distributed-load
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download all JTL files
+        uses: actions/download-artifact@v4
+        with:
+          pattern: jtl-runner-*
+          merge-multiple: true
+
+      - name: Combine JTL files
+        run: |
+          # Combine all JTL files (keep header from first, skip headers from rest)
+          head -1 $(ls *.jtl | head -1) > combined.jtl
+          for f in *.jtl; do tail -n +2 "$f" >> combined.jtl; done
+          echo "Combined $(wc -l < combined.jtl) result rows from ${{ github.event.inputs.runners }} runners"
+
+      - name: Upload combined JTL
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-results
+          path: combined.jtl
+          retention-days: 30
